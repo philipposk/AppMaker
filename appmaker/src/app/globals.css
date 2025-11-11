@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+  --background: #080912;
+  --foreground: #f5f7ff;
+  --muted: #171a2b;
+  --accent: #6a5bff;
+  --glow: linear-gradient(135deg, #6a5bff 0%, #ff5fc1 50%, #30d8ff 100%);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+    --background: #f5f7ff;
+    --foreground: #0c0d16;
+    --muted: #d6dbff;
+    --accent: #5b4bff;
+    --glow: linear-gradient(135deg, #5b4bff 0%, #ff7ad7 50%, #4fc8ff 100%);
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: radial-gradient(circle at 20% 20%, rgba(106, 91, 255, 0.25), transparent 45%),
+    radial-gradient(circle at 80% 10%, rgba(48, 216, 255, 0.18), transparent 40%),
+    linear-gradient(180deg, rgba(8, 9, 18, 0.92), rgba(8, 9, 18, 0.96));
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  min-height: 100vh;
+  margin: 0;
+}
+
+input[type="range"] {
+  accent-color: var(--accent);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: 0 0 15px rgba(106, 91, 255, 0.7);
+  border: none;
+}
+
+input[type="range"]::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: 0 0 15px rgba(106, 91, 255, 0.7);
+  border: none;
+}
