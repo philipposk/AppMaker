@@ -179,6 +179,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
     if (typeof window !== "undefined") {
       try {
         localStorage.setItem("praiser-siteName", name);
+        console.log("Saved siteName to localStorage:", name);
       } catch (error) {
         console.error("Error saving siteName to localStorage:", error);
       }
@@ -407,7 +408,10 @@ export const loadStoredSettings = () => {
       useAppStore.setState({ manualPraiseVolume: parseInt(storedManualPraiseVolume, 10) });
     }
     if (storedSiteName !== null) {
+      console.log("Loading siteName from localStorage:", storedSiteName);
       useAppStore.setState({ siteName: storedSiteName });
+    } else {
+      console.log("No siteName found in localStorage");
     }
     if (storedSiteSubtitle !== null) {
       useAppStore.setState({ siteSubtitle: storedSiteSubtitle });
