@@ -105,12 +105,12 @@ export const PersonInputPanel = () => {
           url: data.url,
           type: data.type,
           name: data.name,
-        };
+        } as MessageImage;
       });
 
       const uploadedImages = (await Promise.all(uploadPromises)).filter(
         (img): img is MessageImage => img !== null
-      );
+      ) as MessageImage[];
 
       setImages((prev) => [...prev, ...uploadedImages]);
     } catch (error) {
@@ -158,8 +158,8 @@ export const PersonInputPanel = () => {
       });
 
       const uploadedVideos = (await Promise.all(uploadPromises)).filter(
-        (video): video is { url: string; type: string; name?: string } => video !== null
-      );
+        (video) => video !== null
+      ) as Array<{ url: string; type: string; name?: string }>;
 
       setVideos((prev) => [...prev, ...uploadedVideos]);
     } catch (error) {
