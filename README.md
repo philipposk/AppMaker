@@ -1,2 +1,2 @@
 # Praiser
-Mike’s AI Chatbot — Trained to shower your chosen hero with endless praise!
+Praiser AI Chatbot — Trained to shower your chosen hero with endless praise!
