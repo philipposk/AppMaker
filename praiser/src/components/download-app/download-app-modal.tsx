@@ -79,7 +79,7 @@ export const DownloadAppModal = () => {
           />
           
           {/* Modal Content */}
-          <div className="fixed top-1/2 left-1/2 lg:left-[calc(128px+50%)] z-[100] flex h-[90vh] max-h-[600px] w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-white/10 bg-black/90 backdrop-blur-xl shadow-2xl">
+          <div className="fixed top-1/2 left-1/2 lg:left-[calc(128px+50vw)] z-[100] flex h-[90vh] max-h-[600px] w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-white/10 bg-black/90 backdrop-blur-xl shadow-2xl">
             {/* Header */}
             <div className="flex shrink-0 items-center justify-between border-b border-white/5 p-6">
               <div className="flex items-center gap-3">
