@@ -19,7 +19,7 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     env: {
       ...process.env,
-      APPMAKER_USE_GROQ_STUB: "true",
+      PRAISER_USE_GROQ_STUB: "true",
     },
   },
   projects: [

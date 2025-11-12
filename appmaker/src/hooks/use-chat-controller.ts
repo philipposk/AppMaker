@@ -1,39 +1,25 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 
 import { useAppStore } from "@/state/app-store";
+import type { Message, MessageImage } from "@/lib/types";
 
 export const useChatController = () => {
-  const {
-    addMessage,
-    setProcessing,
-    isProcessing,
-    appendMessages,
-    replaceTemplate,
-    setClarifications,
-    vibeScore,
-    paletteSummary,
-    moodBoard,
-    template,
-  } = useAppStore((state) => ({
-    addMessage: state.addMessage,
-    setProcessing: state.setProcessing,
-    appendMessages: state.appendMessages,
-    replaceTemplate: state.replaceTemplate,
-    setClarifications: state.setClarifications,
-    vibeScore: state.vibeScore,
-    paletteSummary: state.paletteSummary,
-    moodBoard: state.moodBoard,
-    template: state.template,
-    isProcessing: state.isProcessing,
-  }));
+  const addMessage = useAppStore((state) => state.addMessage);
+  const setProcessing = useAppStore((state) => state.setProcessing);
+  const appendMessages = useAppStore((state) => state.appendMessages);
+  const personInfo = useAppStore((state) => state.personInfo);
+  const praiseVolume = useAppStore((state) => state.praiseVolume);
+  const isProcessing = useAppStore((state) => state.isProcessing);
+  const requestInFlightRef = useRef(false);
 
   const sendUserMessage = useCallback(
-    async (content: string, source: "text" | "voice" = "text") => {
-      if (!content.trim()) return;
+    async (content: string, source: "text" | "voice" = "text", images?: MessageImage[]) => {
+      if ((!content.trim() && (!images || images.length === 0)) || requestInFlightRef.current) return;
 
       const trimmed = content.trim();
+      requestInFlightRef.current = true;
 
       const existingMessages = useAppStore.getState().messages;
 
@@ -41,58 +27,78 @@ export const useChatController = () => {
         role: "user",
         content: trimmed,
         source,
+        images,
       });
 
       setProcessing(true);
 
       try {
-        const messagesPayload = [...existingMessages, { role: "user", content: trimmed }].filter(
+        const lastUserMessage = { role: "user" as const, content: trimmed, images };
+        const messagesPayload = [...existingMessages, lastUserMessage].filter(
           (message) => message.role === "user" || message.role === "assistant",
         );
 
-        const response = await fetch("/api/groq/plan", {
+        const response = await fetch("/api/groq/praise", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            messages: messagesPayload.map(({ role, content }) => ({
+            messages: messagesPayload.map(({ role, content, images: msgImages }) => ({
               role,
               content,
+              images: msgImages,
             })),
-            template,
-            vibeScore,
-            paletteSummary,
-            moodBoard: moodBoard.map(({ id, averageColor, name }) => ({
-              id,
-              averageColor,
-              name,
-            })),
+            personInfo,
+            praiseVolume,
           }),
         });
 
         if (!response.ok) {
           const errorBody = await response.json().catch(() => ({}));
-          throw new Error(errorBody?.details || "Groq request failed.");
+          let errorMessage = errorBody?.details || errorBody?.error || "Request failed.";
+          
+          // Provide more helpful error messages
+          if (response.status === 503) {
+            errorMessage = errorBody?.error || "The AI service is currently overloaded. Please try again in a few moments.";
+          } else if (response.status === 429) {
+            errorMessage = "Too many requests. Please wait a moment and try again.";
+          }
+          
+          throw new Error(errorMessage);
         }
 
         const data = await response.json();
 
-        if (data.template) {
-          replaceTemplate(data.template);
-        }
-        if (Array.isArray(data.clarifications)) {
-          setClarifications(data.clarifications);
+        // Handle assistant message
+        const messagesToAdd: Array<Omit<Message, "id" | "createdAt">> = [];
+        
+        if (data.assistantMessage || data.assistant_message) {
+          const assistantMessage = data.assistantMessage || data.assistant_message;
+          const currentMessages = useAppStore.getState().messages;
+          const lastMessage = currentMessages[currentMessages.length - 1];
+          
+          // Avoid duplicate messages
+          if (lastMessage?.role !== "assistant" || lastMessage?.content !== assistantMessage) {
+            messagesToAdd.push({
+              role: "assistant",
+              content: assistantMessage,
+            });
+          }
         }
 
-        appendMessages([
-          {
+        // Handle separate image message if provided
+        if (data.separateImageMessage) {
+          messagesToAdd.push({
             role: "assistant",
-            content:
-              data.assistantMessage ??
-              "I processed your idea. Let me know if you want to refine anything further!",
-          },
-        ]);
+            content: data.separateImageMessage.content,
+            images: data.separateImageMessage.images,
+          });
+        }
+
+        if (messagesToAdd.length > 0) {
+          appendMessages(messagesToAdd);
+        }
       } catch (error) {
         console.error("sendUserMessage error", error);
         appendMessages([
@@ -100,25 +106,16 @@ export const useChatController = () => {
             role: "system",
             content:
               error instanceof Error
-                ? `I couldn't reach Groq: ${error.message}. Double-check your GROQ_API_KEY and try again.`
-                : "Something went wrong talking to Groq. Please try again.",
+                ? `I couldn't reach the AI: ${error.message}. Please try again.`
+                : "Something went wrong. Please try again.",
           },
         ]);
       } finally {
         setProcessing(false);
+        requestInFlightRef.current = false;
       }
     },
-    [
-      addMessage,
-      appendMessages,
-      setProcessing,
-      template,
-      vibeScore,
-      paletteSummary,
-      moodBoard,
-      replaceTemplate,
-      setClarifications,
-    ],
+    [addMessage, appendMessages, setProcessing, personInfo, praiseVolume],
   );
 
   return {

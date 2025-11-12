@@ -1,15 +1,15 @@
-## AppMaker · Vibecoding Assistant
+## Praiser · AI Praise Assistant
 
-AppMaker is a Next.js application that turns raw app ideas into scoped Instructions, Cursor Rules, and TODO plans. It supports Groq-powered chat, voice transcription, mood-board palette extraction, and Cursor export stubs so you can bootstrap new projects directly from a vibe session.
+Praiser is a Next.js application that celebrates and praises a specific person. It uses Groq-powered AI to keep conversations focused on praising the person you choose, with customizable praise intensity and support for images, videos, URLs, and extra information.
 
 ### Key Features
 
-- Groq chat orchestration for filling the Instructions / Cursor Rules / TODO template.
-- Voice capture with Whisper transcription (or stubbed responses for local development).
-- Mood board uploader with automatic palette summaries feeding vibe-aware prompts.
-- Vibe meter slider to steer assistant tone.
-- Clarification queue that shows every unanswered template item with example + recommendation.
-- Cursor export scaffolding that prepares Markdown payloads for future API hooks.
+- Groq-powered chat that always brings conversations back to praising
+- Voice capture with Whisper transcription
+- Person info management (name, images, videos, URLs, extra info)
+- Praise volume control (0-100%) to adjust enthusiasm level
+- Interactive AI messages that can send images of the person
+- Beautiful, modern UI with chat window, scroll, and image support
 
 ## Getting Started
 
@@ -29,10 +29,8 @@ cp .env.example .env.local
 
 | Variable | Description |
 | --- | --- |
-| `GROQ_API_KEY` | Required for live chat + transcription. Leave blank and set `APPMAKER_USE_GROQ_STUB=true` for offline development. |
-| `CURSOR_API_TOKEN`, `CURSOR_WORKSPACE_ID` | Optional; when provided the export route logs payloads ready for Cursor’s future API. |
-| `CURSOR_API_BASE_URL` | Override Cursor endpoint if needed (defaults to `https://api.cursor.run`). |
-| `APPMAKER_USE_GROQ_STUB` | Set to `true` to bypass Groq calls and use local stub responses (used by Playwright tests). |
+| `GROQ_API_KEY` | Required for live chat + transcription. Leave blank and set `PRAISER_USE_GROQ_STUB=true` for offline development. |
+| `PRAISER_USE_GROQ_STUB` | Set to `true` to bypass Groq calls and use local stub responses (used by Playwright tests). |
 
 ### 3. Run the dev server
 
@@ -40,7 +38,7 @@ cp .env.example .env.local
 pnpm dev
 ```
 
-Visit `http://localhost:3000` to start vibecoding.
+Visit `http://localhost:3000` to start praising!
 
 ## Testing
 
@@ -54,15 +52,14 @@ Traces are captured on the first retry; reports are stored in `playwright-report
 
 ## Project Structure
 
-- `src/state/` — Zustand store for conversation state, template values, palette data.
-- `src/lib/` — Shared template definitions, schema validators, and helper utilities.
-- `src/components/` — Chat UI, template decks, vibe controls, mood board upload, Cursor export panel.
-- `src/app/api/groq` — Plan + transcription routes using Groq SDK (with stub fallback).
-- `src/app/api/cursor` — Export scaffolding that logs payloads and can be wired to Cursor APIs.
+- `src/state/` — Zustand store for conversation state, person info, and praise volume.
+- `src/lib/` — Shared types and utilities.
+- `src/components/` — Chat UI, person input panel, praise volume control.
+- `src/app/api/groq` — Praise + transcription routes using Groq SDK (with stub fallback).
 - `tests/` — Playwright specs.
 
 ## Development Notes
 
-- Conventional commits recommended (e.g., `feat: add Groq stub mode`).
+- Conventional commits recommended (e.g., `feat: add person info panel`).
 - Run `pnpm lint` before submitting changes.
-- Set `APPMAKER_USE_GROQ_STUB=true` when developing without credentials; remember to revert for production.
+- Set `PRAISER_USE_GROQ_STUB=true` when developing without credentials; remember to revert for production.
