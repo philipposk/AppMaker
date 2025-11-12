@@ -22,8 +22,8 @@ export const ChatPanel = () => {
           {isProcessing ? "Groq synthesizing" : "Groq ready"}
         </div>
       </header>
-        <div className="flex-1 overflow-hidden rounded-3xl border border-white/5 bg-black/40 p-6 shadow-inner shadow-black/40">
-          <div className="flex h-full flex-col gap-4 overflow-y-auto pr-2">
+      <div className="flex-1 overflow-hidden rounded-3xl border border-white/5 bg-black/40 p-6 shadow-inner shadow-black/40">
+        <div className="flex h-full flex-col gap-4 overflow-y-auto pr-2">
           {messages.length === 0 ? (
             <EmptyState />
           ) : (
