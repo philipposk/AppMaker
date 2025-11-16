@@ -42,7 +42,6 @@ export async function GET() {
         console.log("Found settings blob:", {
           pathname: settingsBlob.pathname,
           url: settingsBlob.url,
-          size: settingsBlob.size,
         });
         cachedBlobUrl = settingsBlob.url;
 
