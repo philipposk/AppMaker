@@ -175,7 +175,6 @@ export async function POST(request: NextRequest) {
     console.log("Settings saved to blob successfully:", {
       url: blob.url,
       pathname: blob.pathname,
-      size: blob.size,
     });
     
     // Cache the URL for faster retrieval
